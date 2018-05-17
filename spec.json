@@ -1,0 +1,192 @@
+choose character: "5"
+
+enter_room: room number / "n" // "n" to create a random room and enter it
+	out: room number / {"room": 18693, "cur": "圭月", "ene": "小兔"}
+		// shows room number, or send a object shows your player and enemy's
+
+遊戲剛開始時發送:
+{"msg": "firstAttack", "data": [firstPlayer.name], "hand": player.hand}
+
+
+每回合開始發送:
+{
+	"player": { 
+				"turn": 3, "hand": ['1','2','3','1','1','1'], "deck_left": 35,
+				"life": 20
+		},
+	"enemy": {"turn": 3, "life": 20, "deck_left": 35
+	
+	}
+}
+
+{
+	"attack": "{} 攻擊 {}", 
+	"damaged": "{} 受到{}點傷害", 
+	//"toDefend": "請問要防禦嗎?不出牌請輸入0", 
+	"defended": "{} 防禦成功", 
+	"defend": "{} 沒什麼可以防禦的，回復一點生命", 
+	"heal": "{} 回復兩點生命", 
+	"supply": "{} 增加兩張手牌", 
+	"rob": "{} 正在對 {} 行搶", 
+	"cantRob": "可惜，{} 有夠窮，沒東西能搶", 
+	"robbed": "{} 搶到了 {}"
+	"surprise": "{} 發動奇襲", 
+	"surprised": "{} 受到{}點傷害，而且掉了一張手牌", 
+	"trade": "{} 想與 {} 進行交易", 
+	"tradeChoose": "{} 選擇了 {}",
+	//"toRob": "{} 要搶哪張?", 
+	//"toBeRobbed": "請問要防禦嗎?"
+	//"toTrade": "選擇一張手牌以交換",  
+	"awared": "{} 洞悉了 {} 的{}，並抽取了一張手牌", 
+	/* 整併於上
+		"": "{} 洞悉了 {} 的強奪，並抽取了一張手牌", 
+		"": "{} 洞悉了 {} 的奇襲，並抽取了一張手牌",
+	*/ 
+	"aware": "{} 增加三張手牌", 
+	"plan": "{} 有個妙策", 
+	//"toAdd": "選擇一張卡加入手牌",  
+	"sweep": "{} 對 {} 進行掃射，威力是 {}", 
+	"bless": "{} 獲得加護，身上的毒素一掃而空，並回復三點生命，還抽取了兩張手牌", 
+	"poison": "{} 在食物下毒，{}中毒了", 
+	"curse": "{} 詛咒了 {}，使其損失四點生命，並掉了一張手牌", 
+	"countered": "{} 反制了 {} 的攻擊，反彈了{}點傷害", 
+	"counteredSur": "{} 反制了 {} 的攻擊，反彈了{}點傷害，並使其掉了一張手牌", 
+	"counter": "{} 反制了敵手，使 {} 生命值減半了!", 
+	"chaos": "{} 進入狂亂模式，回復三點生命，並對 {} 造成三點傷害", 
+	"reverse": "{} 一口氣逆轉了情勢",
+	//"": "{} 的生命: {}", 
+	//"": "這是 {} 的手牌", 
+	"noCard": "你抽到了死神", 
+	"left": "牌組剩餘: {} 張", 
+	//"": "{} 抽到了 {}", 
+	//"inTurn": "請問要使用手牌嗎? 若不使用請輸入0", 
+	"turnNumber": "{} 的第{}回合", 
+	"poisonDamaged": "{} 受到了劇毒的侵蝕，損失{}點生命", 
+	"surrender": "{}投降", 
+	"firstAttack": "{}先攻", 
+	"win": "{}獲勝", 
+	"draw": "{}抽到了{}",
+	"drawEne": "{}抽了一張卡片"
+	
+}
+
+
+
+1. attack
+	in: "1"
+	out: 
+		cur: {"msg": "attack", "data": [cur.name, ene.name]}
+		ene: {"msg": "attack", "data": [cur.name, ene.name], 
+				"action": "toDefend", "value": {"damage": cur.damage}} / 無(不能防禦)
+			in: "2" / "8" / "14" / "0"
+			out: 
+				cur: {"msg": "defended", "data": [ene.name]} / 
+						{"msg": "countered", "data": [ene.name]} /
+						{"msg": "awared", "data": [ene.name, "攻擊"]} / 
+						{"msg": "damaged", "data": [ene.name, cur.damage]}
+				ene: 同上
+2. defend //此處指主動使用
+	in: "2"
+	out:
+		cur: {"msg": "defend", "data": [cur.name]}
+		ene: 同上
+3. heal
+	in: "3"
+	out:
+		cur: {"msg": "heal", "data": [cur.name]}
+		ene: 同上
+4. supply
+	in: "4"
+	out:
+		cur: {"msg": "supply", "data": [cur.name]}
+		ene: 同上
+5. rob
+	in: "5"
+	out:
+		cur: {"msg": "rob", "data": [cur.name, ene.name], 
+				"action": "toRob", "value": {"emeny_card:", ene.hand}} /
+				{"msg": "cantRob", "data": [ene.name]}
+			in: card number
+			out:
+				ene: {"action": "toBeRobbed"} / 無(不能防禦時)
+					in: "8" / "0"
+					out: 
+						cur: {"msg": "defended", "data": [ene.name]} /
+								{"msg": "robbed", "data": [ene.name, card]}
+						ene: 同上
+		ene: 無 / {"msg": "cantRob", "data": [ene.name]}
+6. surprise
+	in: "6"
+	out: 
+		cur: 
+		ene: {"action": "toDefend", "value": {"damage": cur.damage}} / 無(不能防禦)
+			in: "2" / "8" / "14" / "0"
+			out: 
+				cur: {"msg": "defended", "data": [ene.name]} /
+						{"msg": "counteredSur", "data": [ene.name]} /
+						{"msg": "awared", "data": [ene.name, "奇襲"]} / 
+						{"msg": "surprised", "data": [ene.name, cur.damage]}
+				ene: 同上
+7. trade
+	in: "7"
+	out:
+		cur: {"msg": "trade", "data": [cur.name, ene.name], "action": "toTrade"}
+			in: card number
+			out:
+				cur: {"msg": "tradeChoose", "data": [cur.name, card number]}
+				ene: {"action": "toTrade"}
+		ene: {"msg": "trade", "data": [cur.name, ene.name]}
+8. aware //此處指主動使用
+	in: "8"
+	out:
+		cur: {"msg": "aware", "data": [cur.name]}
+		ene: 同上
+9. plan
+	in: "9"
+	out: 
+		cur: {"msg": "plan", "data": [cur.name], 
+				"action": "toAdd", "value": {"cards": list}}
+			in: card number
+		ene: {"msg": "plan", "data": [cur.name]}
+10. bless
+	in: "10"
+	out:
+		cur: {"msg": "bless", "data": [cur.name]}
+		ene: 同上
+11. sweep
+	in: "11"
+	out: 
+		cur: 
+		ene: {"action": "toDefend", "value": {"damage": cur.damage}} / 無(不能防禦)
+			in: "2" / "8" / "14" / "0"
+			out: 
+				cur: {"msg": "defended", "data": [ene.name]} / 
+						{"msg": "countered", "data": [ene.name]} /
+						{"msg": "awared", "data": [ene.name, "掃射"]} / 
+						{"msg": "damaged", "data": [ene.name, cur.damage]}
+				ene: 同上
+12. poison
+	in: "12"
+	out:
+		cur: {"msg": "poison", "data": [cur.name, ene.name]}
+		ene: 同上
+13. curse
+	in: "13"
+	out:
+		cur: {"msg": "curse", "data": [cur.name, ene.name]}
+		ene: 同上
+14. counter //此處指主動使用
+	in: "14"
+	out:
+		cur: {"msg": "counter", "data": [cur.name, ene.name]}
+		ene: 同上
+15. chaos
+	in: "15"
+	out:
+		cur: {"msg": "chaos", "data": [cur.name, ene.name]}
+		ene: 同上
+16. reverse
+	in: "16"
+	out:
+		cur: {"msg": "reverse", "data": [cur.name]}
+		ene: 同上

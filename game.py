@@ -1,5 +1,7 @@
 import random
 import card
+from room import sendTo
+from json import dumps
 
 class Player:
     def __init__(self,name,deck):
@@ -52,56 +54,56 @@ class Player:
         self.life = 0
 
 # game functions
+
+
 def health(p1,p2):
-    print("{} 的生命: {}".format(p1.name,p1.life))
-    print("{} 的生命: {}".format(p2.name,p2.life))
+    return "{} 的生命: {}\n{} 的生命: {}".format(p1.name,p1.life, p2.name, p2.life)
 
 def display(player):
-    print("這是 {} 的手牌".format(player.name))
-    print(player.display)
+    return "這是 {} 的手牌\n{}".format(player.name, player.display)
 
 def draw(player): # 抽卡
     if len(player.deck) == 0:
         player.life = -99999999 # 牌抽乾了就讓他死
-        print("你抽到了死神")
-        return None
-    new = random.choice(player.deck)
-    print("{} 抽到了 {}".format(player.name,card.cards[new]))
+        return dumps({"msg": "noCard", "data": [player.name]})
+    new = random.choice(player.deck) 
     player.add_card(new)
-    print("牌組剩餘: {} 張".format(len(player.deck)))
-
+    
+    return dumps({"msg": "draw", "data": [player.name, new]})
 # turn control
 # cur:current player
 # ene:enemy
-def turn(p1,p2):
-    if p1.playing == True:
-        cur = p1
-        ene = p2
-    elif p2.playing == True:
-        cur = p2
-        ene = p1
+async def turn(wsp1,wsp2):
+    p1, p2 = wsp1.player, wsp2.player
+    wscur, wsene = (wsp1, wsp2) if p1.playing == True else (wsp2, wsp1)
+
+    cur, ene = wscur.player, wsene.player
+    
     cur.turn += 1
-    print("") # change line
-    print("{} 的第{}回合".format(cur.name,cur.turn))
+    
+    await wscur.send("{} 的第{}回合".format(cur.name,cur.turn))
     if cur.poison_check():
-        print("{} 受到了劇毒的侵蝕".format(cur.name))
-        print("{} 損失{}點生命".format(cur.name,cur.poison))
+        await wscur.send("{} 受到了劇毒的侵蝕".format(cur.name))
+        await wscur.send("{} 損失{}點生命".format(cur.name,cur.poison))
     if cur.life <= 0:
         return
-    health(p1,p2)
-    draw(cur) # 抽卡
-    display(cur) # 顯示手牌
+    await sendTo(health(p1,p2), wsp1, wsp2)
+    await sendTo(draw(cur), wsp1, wsp2) # 抽卡
+    await sendTo(display(cur), wscur) # 顯示手牌
     while True:
-        choice = input("請問要使用手牌嗎? 若不使用請輸入0 ")
+        await sendTo("請問要使用手牌嗎? 若不使用請輸入0", wscur)
+        print("Wait receive")
+        choice = await wscur.recv()
+        print("Received")
         if choice in cur.hand:
-            card.skills[choice](cur,ene)
+            card.skills[choice](wscur, wsene)
             cur.remove_card(choice)
             break
         elif choice == "0":
             break
         elif choice == "-1":
             cur.surrender()
-            print("{}投降".format(cur.name))
+            await sendTo("{}投降".format(cur.name), wsp1, wsp2)
             break
         del choice # prevent reading old data
     p1.playing,p2.playing = p2.playing,p1.playing # switch!
