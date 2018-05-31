@@ -1,0 +1,88 @@
+.cards.container > .ts.card {
+    width: 220px !important;
+    display: inline-flex !important;
+    white-space: normal;
+    margin-left: 8px;
+    margin-top: 5px; 
+    margin-bottom: 0;
+}
+.cards.container > .ts.card:first-child {
+    margin-left: 0;
+}
+.cards.container {
+    overflow-x: scroll;
+    white-space: nowrap;
+    min-height: 140px;
+    width: 100%;
+    padding : 0 8px;
+    background-color: rgb(250,250,250);
+}
+body,html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+label {
+    background-color: black;
+    color: white;
+    opacity: 0.6;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px 10px;
+    z-index: 10;
+}
+.grid,.column {
+    height: unset;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.speeches {
+    overflow-y: scroll;
+    height: 100%;
+    padding: 10px 5px;
+    box-sizing: border-box;
+    border-left: 1px solid rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+    background-color: #efeef1;
+}
+#game,#myself,#enemy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#game > *,#enemy > *,#myself > * {
+    margin: auto;
+}
+.ts.progress .bar {
+    min-width: 20px;
+}
+.poison {
+    color: purple !important;
+}
+.poison.bar {
+    background-color: purple !important;
+}
+.bar {
+    transition: width .5s ease-in-out;
+}
+.modal .list{
+    max-height: 60vh;
+    overflow-y: scroll;
+}
+.modal .content img {
+    width: 100%;
+}
+p.result.name {
+    position: absolute;
+    font-size:50px;
+    top: calc(50% - 25px);
+    margin: 0;
+    line-height: 50px;
+}
+p.result.enemy.name {
+    left: 1.5em;
+}
+p.result.player.name {
+    right: 1.5em;
+}

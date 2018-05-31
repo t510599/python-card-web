@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>災厄之悲歌</title>
+    <!-- Tocas UI：CSS 與元件 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.3/tocas.css">
+    <!-- Tocas JS：模塊與 JavaScript 函式 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.3/tocas.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="./gameUI.css">
+</head>
+<body>
+    <div class="ts grid" id="grid">
+        <!-- Main Container -->
+        <div class="stretched column">
+            <!-- Enemy information -->
+            <div class="ts fluid container" style="height: 40%;" id="enemy">
+                <div class="ts profile segments" style="width: 30%;">
+                    <div class="ts top attached name segment">
+                        <div class="ts center aligned header">== 等待中 ==</div>
+                    </div>
+                    <div class="ts attached life progress">
+                            <div class="bar" style="width:100%;" data-life="20"><span class="text">--</span></div>
+                        </div>
+                    <div class="ts status segment">
+                        清新
+                    </div>                   
+                </div>
+
+                <!-- Player Avatar -->
+                <i class="massive user icon" style="opacity: 0;"></i>
+
+                <div class="ts info segments">
+                    <div class="ts segment">
+                        <i class="credit card icon"></i>手牌 <span id="eneHand"> -- </span>
+                    </div>
+                    <div class="ts segment">
+                        <i class="inbox icon"></i>牌組 <span id="eneDeck"> -- </span>
+                    </div>                    
+                </div>
+            </div>
+
+            <!-- Game Status -->
+            <div class="ts fluid container" id="game" style="height: 20%;">
+                <div class="ts statistic">
+                    <div class="label">房號</div>
+                    <div class="value">00000</div>
+                </div>
+                <div class="ts big header" id="turn">Turn 0</div>
+                <div class="ts inverted button" id="status">等待中</div>
+                <div class="ts separated buttons" id="actions">
+                    <a class="ts disabled primary button" id="skip">跳過回合</a>
+                    <a class="ts negative button" id="giveup">放棄人生</a>
+                </div>
+            </div>
+
+            <!-- Current Player information -->
+            <div class="ts fluid container" style="height: 40%;" id="myself">
+                <div class="ts profile segments" style="width: 30%;">
+                    <div class="ts name top attached segment">
+                        <div class="ts center aligned header">===</div>
+                    </div>
+                    <div class="ts attached life progress">
+                        <div class="bar" style="width:100%" data-life="20"><span class="text">--</span></div>
+                    </div>
+                    <div class="ts status segment">
+                        清新
+                    </div>                   
+                </div>
+
+                <!-- Player Avatar -->
+                <i class="massive user icon"></i>
+                
+                <div class="ts info segments">
+                    <div class="ts segment">
+                        <i class="credit card icon"></i>手牌 <span id="selfHand">--</span>
+                    </div>
+                    <div class="ts segment">
+                        <i class="inbox icon"></i>牌組 <span id="selfDeck">--</span>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="four wide column">
+            <label>Log</label>
+            <div class="ts speeches" id="log">
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Container -->
+    <div class="ts fluid container" style="position: absolute; bottom:0;">
+        <label>你的手牌</label>
+        <div class="cards container">
+            <a class="ts card"><div class="content"><div class="header">Waiting</div><div class="meta">0</div><div class="description">等待中</div></div></a>
+        </div>
+    </div>
+
+    <!-- Anchor -->
+    <!-- snackbar -->
+    <div class="ts bottom right snackbar">
+        <div class="content"></div>
+        <a class="action"></a>
+    </div>
+    <!-- modal -->
+    <div class="ts modals dimmer">
+        <dialog id="modal" class="ts modal">
+            <div class="header"></div>
+            <div class="content"></div>
+            <div class="actions"></div>
+        </dialog>
+    </div>
+</body>
+<!-- websocket util -->
+<script src="./ws.js"></script>
+<!-- string formating util -->
+<script src="./stringFormat.js"></script>
+<!-- game core -->
+<script src="./gameCore.js"></script>
+</html>
