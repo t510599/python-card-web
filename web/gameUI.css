@@ -18,8 +18,8 @@
     background-color: rgb(250,250,250);
 }
 body,html {
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     overflow: hidden;
 }
 label {
