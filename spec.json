@@ -1,7 +1,7 @@
 choose character: "5"
 
 enter_room: room number / "n" // "n" to create a random room and enter it
-	out: room number / {"room": 18693, "cur": "圭月", "ene": "小兔"}
+	out: room number / {"room": 7122, "cur": "圭月", "ene": "小兔"}
 		// shows room number, or send a object shows your player and enemy's
 
 遊戲剛開始時發送:
@@ -12,12 +12,13 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 {
 	"player": { 
 				"turn": 3, "hand": ['1','2','3','1','1','1'], "deck_left": 35,
-				"life": 20
+				"life": 20, "poison": 0,
 		},
-	"enemy": {"turn": 3, "life": 20, "deck_left": 35
+	"enemy": {"turn": 3, "life": 20, "deck_left": 35, "hand": 30, "poison": 1,
 	
 	}
 }
+
 
 {
 	"attack": "{} 攻擊 {}", 
@@ -28,8 +29,8 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 	"heal": "{} 回復兩點生命", 
 	"supply": "{} 增加兩張手牌", 
 	"rob": "{} 正在對 {} 行搶", 
-	"cantRob": "可惜，{} 有夠窮，沒東西能搶", 
-	"robbed": "{} 搶到了 {}"
+	"cantRob": "{}沒有搶到任何東西", 
+	"robbed": "{} 搶到了 {}",
 	"surprise": "{} 發動奇襲", 
 	"surprised": "{} 受到{}點傷害，而且掉了一張手牌", 
 	"trade": "{} 想與 {} 進行交易", 
@@ -66,7 +67,9 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 	"firstAttack": "{}先攻", 
 	"win": "{}獲勝", 
 	"draw": "{}抽到了{}",
-	"drawEne": "{}抽了一張卡片"
+	"drawEne": "{}抽了一張卡片", 
+	"use": "{}使用了{}",
+	"eneDisconn": "因敵方斷線，所以{}獲勝",
 	
 }
 
@@ -76,13 +79,13 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 	in: "1"
 	out: 
 		cur: {"msg": "attack", "data": [cur.name, ene.name]}
-		ene: {"msg": "attack", "data": [cur.name, ene.name], 
-				"action": "toDefend", "value": {"damage": cur.damage}} / 無(不能防禦)
+		ene: 同cur, {"action": "toDefend", "value": {"damage": cur.damage, "type": "attack"}} / 
+				同cur(不能防禦)
 			in: "2" / "8" / "14" / "0"
 			out: 
 				cur: {"msg": "defended", "data": [ene.name]} / 
 						{"msg": "countered", "data": [ene.name]} /
-						{"msg": "awared", "data": [ene.name, "攻擊"]} / 
+						{"msg": "awared", "data": [cur.name, ene.name, "攻擊"]} / 
 						{"msg": "damaged", "data": [ene.name, cur.damage]}
 				ene: 同上
 2. defend //此處指主動使用
@@ -104,37 +107,39 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 	in: "5"
 	out:
 		cur: {"msg": "rob", "data": [cur.name, ene.name], 
-				"action": "toRob", "value": {"emeny_card:", ene.hand}} /
-				{"msg": "cantRob", "data": [ene.name]}
+				"action": "toRob", "value": {"enemy_card": ene.hand}} /
+				{{"msg": "cantRob", "data": [cur.name]}]}
 			in: card number
 			out:
-				ene: {"action": "toBeRobbed"} / 無(不能防禦時)
+				ene: {"action": "toBeRobbed"} / 無(不能防禦)
 					in: "8" / "0"
 					out: 
-						cur: {"msg": "defended", "data": [ene.name]} /
+						cur: {"msg": "awared", "data": [cur.name, ene.name, "搶奪"]} /
 								{"msg": "robbed", "data": [ene.name, card]}
 						ene: 同上
-		ene: 無 / {"msg": "cantRob", "data": [ene.name]}
+		ene: 無 / {{"msg": "cantRob", "data": [cur.name]}]}
 6. surprise
 	in: "6"
 	out: 
-		cur: 
-		ene: {"action": "toDefend", "value": {"damage": cur.damage}} / 無(不能防禦)
+		cur: {"msg": "surprise", "data": [cur.name]}
+		ene: 同cur, {"action": "toDefend", "value": {"damage": cur.damage, "type": "suprise"}} / 
+				同cur(不能防禦)
 			in: "2" / "8" / "14" / "0"
 			out: 
 				cur: {"msg": "defended", "data": [ene.name]} /
 						{"msg": "counteredSur", "data": [ene.name]} /
-						{"msg": "awared", "data": [ene.name, "奇襲"]} / 
+						{"msg": "awared", "data": [cur.name, ene.name, "奇襲"]} / 
 						{"msg": "surprised", "data": [ene.name, cur.damage]}
 				ene: 同上
 7. trade
 	in: "7"
 	out:
-		cur: {"msg": "trade", "data": [cur.name, ene.name], "action": "toTrade"}
+		cur: {"msg": "trade", "data": [cur.name, ene.name]}, 
+				{"action": "toTrade", "value": ["hand": cur.hand]}
 			in: card number
 			out:
 				cur: {"msg": "tradeChoose", "data": [cur.name, card number]}
-				ene: {"action": "toTrade"}
+				ene: 同cur, {"action": "toTrade"}
 		ene: {"msg": "trade", "data": [cur.name, ene.name]}
 8. aware //此處指主動使用
 	in: "8"
@@ -144,8 +149,8 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 9. plan
 	in: "9"
 	out: 
-		cur: {"msg": "plan", "data": [cur.name], 
-				"action": "toAdd", "value": {"cards": list}}
+		cur: {"msg": "plan", "data": [cur.name]}, 
+				{"action": "toAdd", "value": {"cards": list}}
 			in: card number
 		ene: {"msg": "plan", "data": [cur.name]}
 10. bless
@@ -156,13 +161,14 @@ enter_room: room number / "n" // "n" to create a random room and enter it
 11. sweep
 	in: "11"
 	out: 
-		cur: 
-		ene: {"action": "toDefend", "value": {"damage": cur.damage}} / 無(不能防禦)
+		cur: {"msg": "sweep", "data": [cur.name, ene.name, cur.damage]}
+		ene: 同cur, {"action": "toDefend", "value": {"damage": cur.damage, "type": "sweep"}} / 
+				無(不能防禦)
 			in: "2" / "8" / "14" / "0"
 			out: 
 				cur: {"msg": "defended", "data": [ene.name]} / 
 						{"msg": "countered", "data": [ene.name]} /
-						{"msg": "awared", "data": [ene.name, "掃射"]} / 
+						{"msg": "awared", "data": [cur.name, ene.name, "掃射"]} / 
 						{"msg": "damaged", "data": [ene.name, cur.damage]}
 				ene: 同上
 12. poison
