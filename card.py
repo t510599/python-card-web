@@ -3,13 +3,9 @@ import game
 from room import Room
 from json import dumps
 
+unattackable = ['2','8','14']
+unrobable = ['8','17']
 
-cards = dict()
-card_name = ["1.攻擊","2.防禦","3.治癒","4.補給","5.強奪","6.奇襲","7.交易","8.洞悉","9.妙策","10.掃射","11.加護","12.劇毒","13.詛咒","14.反制","15.狂亂","16.逆轉"]
-unattackable = ['2','8','14','17','18']
-unrobable = ['8','17','18']
-for i in range(len(card_name)):
-    cards[str(i+1)] = card_name[i] # initialize cards
 # create default deck
 """
 攻擊*7 防禦*7 治癒*7
@@ -188,11 +184,7 @@ def plan(wscur,wsene):
         ))
     cur.planning = options
     cur.status = Room.PLAN
-    """while True:
-        choice = input("選擇一張卡加入手牌 ")
-        if choice in options:
-            cur.add_card(choice)
-            break"""
+
     return r
 
 def sweep(wscur,wsene):
@@ -280,7 +272,7 @@ def counter(wscur,wsene):
 def chaos(wscur,wsene):
     cur, ene = wscur.player, wsene.player
     r = []
-    r.append(( (wsene,wscur), dumps({"msg": "reverse", "data": [cur.name, ene.name]})))
+    r.append(( (wsene,wscur), dumps({"msg": "chaos", "data": [cur.name, ene.name]})))
 
     cur.life += 3
     ene.life -= 3

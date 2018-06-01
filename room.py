@@ -47,27 +47,6 @@ class Room:
             pass
         
     
-        
-    """async def start(self):
-        p1, p2 = self.players[0].player, self.players[1].player
-        first = random.choice([p1, p2])
-        print(first, p1, p2)
-        first.playing = True # so the first one will be random
-        await sendTo(first.name + "先攻", *self.players)
-        print(first.name,"先攻")
-        print() # change line
-        for _ in range(3): # 初始手牌*3
-            game.draw(p1)
-            game.draw(p2)
-
-        while p1.life > 0 and p2.life > 0:
-            print("game.turn start")                
-            await game.turn(self.players[0], self.players[1])
-            print("game.turn end")
-        if p1.life <= 0:
-            print("{} 獲勝".format(p2.name))
-        elif p2.life <= 0:
-            print("{} 獲勝".format(p1.name))"""
     def start(self): # initialize the game
         p1, p2 = self.players[0].player, self.players[1].player
         ws_list = self.players[:]
@@ -142,13 +121,7 @@ class Room:
             message_to_send.append(( (wscur,), dumps({"msg": "win", "data": ["player"]})))
             message_to_send.append(( (wsene,), dumps({"msg": "win", "data": ["enemy"]})))
 
-
-            
-            
-        #await sendTo(health(p1,p2), wsp1, wsp2)
-        #await sendTo(draw(cur), wsp1, wsp2) # 抽卡
-        #message_to_send.append(( (wscur,), game.display(cur))) # 顯示手牌
-        #message_to_send.append(( (wscur,), "請問要使用手牌嗎? 若不使用請輸入0"))
+  
         return message_to_send
     
     def process(self, wscur, message): # cur is the person who send message to server
@@ -176,9 +149,6 @@ class Room:
                 cur.status = self.NOTHING
                 message_to_send.extend(Room.start_turn(wsene, wscur))
 
-            """elif choice == "-1":
-                cur.surrender()
-                {}投降".format(cur.name)"""
                 
         elif cur.status == self.ROBBING:
             swag = choice

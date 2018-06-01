@@ -10,14 +10,7 @@ from json import dumps, loads
 import ssl
 
 connected = {-1: []}
-character = dict()
-name=["安","圭月","梅","小兔","銀","正作","W","桑德","海爾","雪村"]
 
-for i in range(len(name)):
-    character[str(i+1)] = name[i] 
-
-
-sad = None
 fut = None
 wait_fut = [0, 0]
 async def wait(websocket, *cors, timeout=45, futs=None):
@@ -53,7 +46,7 @@ def random_room(room_list):
 
 
 async def enter_room(websocket):
-    global connected ,sad, fut
+    global connected, fut
     
     room_list = [room_id for room_id in connected if len(connected[room_id])<2 and room_id != -1]
     #print("I'm here")
@@ -81,7 +74,6 @@ async def enter_room(websocket):
                 
         if count+1 == 1: # 該玩家已加入房間
             await websocket.send(str(room_id))
-            sad = websocket
         else:
             players = connected[websocket.room].start()
             
@@ -95,7 +87,7 @@ async def enter_room(websocket):
             for ws_list, message in Room.start_turn(*players):
                     await sendTo(message, *ws_list)
 async def handler(websocket, path):
-    global connected,sad, fut, wait_fut, rooms
+    global connected, fut, wait_fut, rooms
     print("initialize")
     # Register.
     connected[-1].append(websocket)
@@ -125,8 +117,7 @@ async def handler(websocket, path):
             if websocket.status == Room.MATCHING:
                 await enter_room(websocket)
             elif websocket.status == Room.WAITING:
-                print("SAD", "FIRST" if websocket == sad else "SECOND")
-                
+  
                 fut = asyncio.ensure_future(websocket.recv())
                 
                 try:
@@ -146,18 +137,15 @@ async def handler(websocket, path):
                 except asyncio.CancelledError:
                     pass
 
-                print("SADDDDDD", "FIRST" if websocket == sad else "SECOND")
-                
+
             elif websocket.status == Room.PLAYING:
                 
                 try:
                     enemy = 0 if websocket == connected[websocket.room].players[1] else 1
                     wait_fut[(enemy+1)%2] = asyncio.ensure_future(websocket.recv())
                     
-                    print("wait for", "FIRST" if websocket == sad else "SECOND")
                     message = await wait(websocket, timeout=30, futs=[wait_fut[(enemy+1)%2]])
                     print("received message", message)
-                    print("FIRST" if websocket == sad else "SECOND", ":", message)
                     if message == "exception":
                         break
                     message_to_send = connected[websocket.room].process(websocket, message)
@@ -174,7 +162,7 @@ async def handler(websocket, path):
 
                     
                 except asyncio.CancelledError:
-                    print("FIRST" if websocket == sad else "SECOND", "was Canceled\n\n")
+                    print("Canceled\n\n")
                 
                 
                 

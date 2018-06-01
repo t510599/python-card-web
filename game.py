@@ -57,12 +57,6 @@ class Player:
 # game functions
 
 
-def health(p1,p2):
-    return "{} 的生命: {}\n{} 的生命: {}".format(p1.name,p1.life, p2.name, p2.life)
-
-def display(player):
-    return "這是 {} 的手牌\n{}".format(player.name, player.display)
-
 def draw(player): # 抽卡
     if len(player.deck) == 0:
         player.life = -99999999 # 牌抽乾了就讓他死
