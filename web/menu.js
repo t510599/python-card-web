@@ -19,9 +19,12 @@ btn.addEventListener('click',() => {
 
 var characterMenu = document.querySelector('.ts.centered.menu');
 var characters = Array.from(characterMenu.children);
+var nextBtn = document.querySelector('#next');
+var firstStep = document.querySelector('#firstStep');
+
 characterMenu.addEventListener('click', (e) => {
     var id = e.target.dataset.id;
-    console.log("charactor:"+id);
+    nextBtn.classList.remove('disabled');
     if(id) {
         characters.forEach(e => {
             e.classList.remove('active');
@@ -31,17 +34,18 @@ characterMenu.addEventListener('click', (e) => {
     }
 });
 
-var nextBtn = document.querySelector('#next');
-nextBtn.addEventListener('click',() => { displayRoom() });
+nextBtn.addEventListener('click',() => {
+    if (characterID) {
+        displayRoom();
+    }
+});
 
-var firstStep = document.querySelector('#firstStep');
 firstStep.addEventListener('click',() => { displayCharacter() });
 
 var roomNum = document.querySelector('#roomNum');
 var roomBtn = document.querySelector('#roomBtn');
 roomBtn.addEventListener('click',() => {
     if(roomNum.value != null && 0 <= parseInt(roomNum.value) && 99999 >= parseInt(roomNum.value)){
-        console.log('room:'+roomNum.value)
         roomID = roomNum.value;
         setter();
         location.href = './cards.html';
@@ -52,7 +56,7 @@ roomBtn.addEventListener('click',() => {
 
 var randomBtn = document.querySelector('#random');
 randomBtn.addEventListener('click',() => {
-    roomID = "n"
+    roomID = "n";
     setter();
     location.href = './cards.html';
 });
