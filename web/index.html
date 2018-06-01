@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>災厄之悲歌</title>
+    <!-- Tocas UI：CSS 與元件 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.3/tocas.css">
+    <!-- Tocas JS：模塊與 JavaScript 函式 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.3/tocas.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <style>
+    body {
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+    body > .container {
+        height: 100%;
+    }
+    .title.container {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .dialog.container {
+        display: flex !important;
+        flex-direction: column;
+    }
+    .dialog.container > .ts.segment {
+        flex: 1;
+    }
+    </style>
+</head>
+<body>
+    <div class="ts title fluid center aligned container">
+        <h1 style="margin-left: auto; margin-right: auto;display: inline-flex;">災厄之悲歌</h1>
+        <button class="ts primary animated fadeInDown button" style="animation-delay: .8s;">進入遊戲</button>
+        <div class="ts steps" style="display: none;">
+            <a class="step" id="firstStep">
+                <i class="user icon"></i>
+                <div class="content">
+                    <div class="title">角色</div>
+                    <div class="description">選擇你的鬥士</div>
+                </div>
+            </a>
+            <a class="step" id="secondStep">
+                <i class="cube icon"></i>
+                <div class="content">
+                    <div class="title">房號</div>
+                    <div class="description">輸入房號，或是隨機加入遊戲</div>
+                </div>
+            </a>
+        </div>
+        <div class="ts segment" id="character" style="display: none;">
+            <div class="ts big centered menu">
+                <a class="item" data-id="1">安</a>
+                <a class="item" data-id="2">圭月</a>
+                <a class="item" data-id="3">梅</a>
+                <a class="item" data-id="4">小兔</a>
+                <a class="item" data-id="5">銀</a>
+                <a class="item" data-id="6">正作</a>
+                <a class="item" data-id="7">W</a>
+                <a class="item" data-id="8">桑德</a>
+                <a class="item" data-id="9">海爾</a>
+                <a class="item" data-id="10">雪村</a>
+            </div>
+            <button id="next" class="ts positive button">確認</button>
+        </div>
+        <div class="ts segment" id="room" style="display: none;">
+            <div class="ts action input">
+                <input id="roomNum" type="text" placeholder="0~99999">
+                <button id="roomBtn" class="ts positive button">Join!</button>
+            </div>
+            <div class="ts horizontal divider">or</div>
+            <button id="random" class="ts primary button">隨機配對</button>
+        </div>
+    <script src="./menu.js"></script>
+</body>
+</html>
