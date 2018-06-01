@@ -4,7 +4,7 @@ var MouseOn = false;
 var now = null; // to store whose turn is this. value: "player" or "enemy"
 var socketReady = false;
 var lock = true;
-var debugMode = true;
+var debugMode = false;
 var dialogDisplay = false;
 var curName = "";
 var eneName = "";
@@ -69,7 +69,7 @@ var messages = {
 	"counter": "{} 反制了敵手，使 {} 生命值減半了!",
 	"chaos": "{} 進入狂亂模式，回復三點生命，並對 {} 造成三點傷害",
 	"reverse": "{} 一口氣逆轉了情勢",
-	"noCard": "你抽到了死神",
+	"noCard": "{} 抽到了死神",
 	"poisonDamaged": "{} 受到了劇毒的侵蝕，損失{}點生命",
 	"surrender": "{}投降",
 	"firstAttack": "{}先攻",
