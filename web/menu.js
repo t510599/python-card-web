@@ -45,11 +45,15 @@ firstStep.addEventListener('click',() => { displayCharacter() });
 var roomNum = document.querySelector('#roomNum');
 var roomBtn = document.querySelector('#roomBtn');
 roomBtn.addEventListener('click',() => {
-    if(roomNum.value != null && 0 <= parseInt(roomNum.value) && 99999 >= parseInt(roomNum.value)){
+    var regex = new RegExp('^[0-9]{1,5}$');
+    if(roomNum.value != null && regex.test(roomNum.value)){
         roomID = roomNum.value;
         setter();
         location.href = './cards.html';
     } else {
+        ts('.snackbar').snackbar({
+            content: '請輸入正確的房號!',
+        });
         console.log("room number error");
     }
 });
