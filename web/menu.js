@@ -58,6 +58,12 @@ roomBtn.addEventListener('click',() => {
     }
 });
 
+roomNum.addEventListener('keypress',(e) => {
+    if(e.keyCode == '13') {
+        roomBtn.dispatchEvent((new Event('click')));
+    }
+})
+
 var randomBtn = document.querySelector('#random');
 randomBtn.addEventListener('click',() => {
     roomID = "n";
