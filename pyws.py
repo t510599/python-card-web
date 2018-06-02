@@ -10,6 +10,7 @@ from json import dumps, loads
 import ssl
 
 connected = {-1: []}
+name=["安","圭月","梅","小兔","銀","正作","W","桑德","海爾","雪村"]
 
 fut = None
 wait_fut = [0, 0]
