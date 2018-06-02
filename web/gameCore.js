@@ -6,6 +6,7 @@ var socketReady = false;
 var lock = true;
 var debugMode = false;
 var dialogDisplay = false;
+var playerChooseStatus = false;
 var curName = "";
 var eneName = "";
 var drawID = "";
@@ -29,7 +30,7 @@ var myself = $('#myself');
 /* text */
 // cards
 var cards = {'1': '攻擊', '2': '防禦', '3': '治癒', '4': '補給', '5': '強奪', '6': '奇襲', '7': '交易', '8': '洞悉', '9': '妙策', '10': '掃射', '11': '加護', '12': '劇毒', '13': '詛咒', '14': '反制', '15': '狂亂', '16': '逆轉'};
-var cardsDescription = {"1":"對敵方造成兩點傷害","2":"回復一點生命<br>被動:抵擋攻擊類卡片","3":"回復兩點生命","4":"抽取兩張手牌","5":"從敵方手牌中選擇一張加入自己的手牌","6":"對敵方造成兩點傷害，並使其隨機損失一張手牌","7":"選取一張手牌與敵方交換","8":"抽取三張手牌<br>被動:抵擋攻擊類卡片，並抽取一張手牌、抵擋強奪的效果","9":"從牌庫中隨機挑出三張卡片，選擇一張加入手牌","10":"對敵方造成零～五點傷害","11":"回復三點生命，並解除中毒","12":"使敵方中毒：每個回合，玩家會損失一點生命","13":"使其損失四點生命，並隨機損失一張手牌","14":"使敵方生命減半<br>被動:抵擋攻擊類卡片，並反彈其傷害和效果","15":"回復三點生命，並對敵方造成三點傷害","16":"使自己與敵方的生命交換"}
+var cardsDescription = {"1":"對敵方造成兩點傷害","2":"回復一點生命<br>被動:抵擋攻擊類卡片","3":"回復兩點生命","4":"抽取兩張手牌","5":"從敵方手牌中選擇一張加入自己的手牌","6":"對敵方造成一點傷害，並使其隨機損失一張手牌","7":"選取一張手牌與敵方交換","8":"抽取三張手牌<br>被動:抵擋攻擊類卡片，並抽取一張手牌、抵擋強奪的效果","9":"從牌庫中隨機挑出三張卡片，選擇一張加入手牌","10":"對敵方造成零～五點傷害","11":"回復三點生命，並解除中毒","12":"使敵方中毒：每個回合，玩家會損失一點生命","13":"使其損失四點生命，並隨機損失一張手牌","14":"使敵方生命減半<br>被動:抵擋攻擊類卡片，並反彈其傷害和效果","15":"回復三點生命，並對敵方造成三點傷害","16":"使自己與敵方的生命交換"}
 
 var characters = {'1': '安', '2': '圭月', '3': '梅', '4': '小兔', '5': '銀', '6': '正作', '7': 'W', '8': '桑德', '9': '海爾', '10': '雪村'};
 
@@ -151,12 +152,10 @@ function wsHandler(dataJson) {
                 Log(dataJson);
                 break;
             case "robbed":
-                robbedCard = dataJson.data[1]; // card ID
-                LogPlayerChoose("robbed",robbedCard);
+                LogPlayerChoose("robbed",dataJson.data);
                 break;
             case "tradeChoose":
-                tradeChoose = dataJson.data[1]; // card ID
-                LogPlayerChoose("tradeChoose",tradeChoose);
+                LogPlayerChoose("tradeChoose",dataJson.data);
                 break;
             case "poisonDamaged":
                 poisonDamage = dataJson.data[1]; // posion level
@@ -254,6 +253,12 @@ $('#skip').click(function() {
 });
 
 $('#giveup').click(function() {
+    dialog.children(".header").html('你放棄人生了，SAD');
+    dialog.children(".content").html('<img src="./lose.png"><p class="result enemy name">'+eneName+'</p><p class="result player name">'+curName+'</p>');
+    dialog.children(".actions").html('<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>');
+    timerInitialize(); // also remember to stop the timer
+    modalOpen();
+    resultListener();
     quit();
 });
 
@@ -275,12 +280,7 @@ log.addEventListener("mouseleave", function() { MouseOn = false; });
 
 function Log(msgJson) {
     var node = logTemplate;
-    if(now === "player") { // to distinguish if this is self log or enemy log
-        node = node.replace("{{ isSelf }}","right");
-    } else if (now === "enemy") {
-        node = node.replace("{{ isSelf }}","");
-    }
-
+    node = (now === "player") ? node.replace("{{ isSelf }}","right") : node.replace("{{ isSelf }}",""); // to distinguish if this is self log or enemy log
     node = node.replace("{{ content }}",messages[msgJson['msg']].format(msgJson['data']));
     log.insertAdjacentHTML("beforeend",node); // insert to log
     if (!MouseOn) { // if mouse isn't over the div, scroll to bottom
@@ -298,21 +298,22 @@ function LogPlayerDraw() {
     drawID = "";
 }
 
-function LogPlayerChoose(type,dataID) {
-    var node = logTemplate.replace("{{ isSelf }}","right");
-    var tmpName = "";
-    if(now === "player") { // to distinguish if this is self log or enemy log
-        node = node.replace("{{ isSelf }}","right");
-        tmpName = curName;
-    } else if (now === "enemy") {
-        node = node.replace("{{ isSelf }}","");
-        tmpName = eneName;
+function LogPlayerChoose(type,data) {
+    var node = logTemplate;
+    var name = data[0];
+    var chooseID = data[1];
+    if (playerChooseStatus || type === "robbed") {
+        node = (now === "player") ? node.replace("{{ isSelf }}","right") : node.replace("{{ isSelf }}",""); // to distinguish if this is self log or enemy log
+    } else {
+        node = (now === "player") ? node.replace("{{ isSelf }}","") : node.replace("{{ isSelf }}","right"); // if this is the second one playerChoose message, then this is another one's choice
     }
-    node = node.replace("{{ content }}",messages[type].format([tmpName,cards[dataID]])); // msgJson['data'][0] player name, msgJson['data'][1] card id
+    
+    node = node.replace("{{ content }}",messages[type].format([name,cards[chooseID]])); // msgJson['data'][0] player name, msgJson['data'][1] card id
     log.insertAdjacentHTML("beforeend",node); // insert to log
     if (!MouseOn) { // if mouse isn't over the div, scroll to bottom
         log.scrollTop = log.scrollHeight; // scroll to bottom
     }
+    playerChooseStatus = (playerChooseStatus && type !== "robbed") ? false : true; // to count this is first playerChoose message or second one on the turn
 }
 
 function LogPlayerPoisonDamaged() {
@@ -499,7 +500,9 @@ function chooseRob(data) {
 }
 
 function chooseTrade(data,tradeID=null) {
-    console.log(tradeChoose);
+    if (data.length == 0) {
+        send(0);
+    }
     if (tradeID) {
         var text = "<p>對手選擇了"+cards[tradeID]+"</p>";
     } else {
@@ -603,7 +606,6 @@ function playerLose() {
 function modalClose() {
     if (dialogDisplay) {
         ts('#modal').modal('hide');
-        console.log('close');
         dialogDisplay = false;
     }
 }
@@ -611,7 +613,6 @@ function modalClose() {
 function modalOpen() {
     if (!dialogDisplay) {
         ts('#modal').modal('show');
-        console.log('open');
         dialogDisplay = true;
     }
 }
@@ -672,8 +673,9 @@ $(document).ready(() => {
     var characterID = localStorage.getItem('character');
     if(!roomID || !characterID){
         roomID = "n";
-        characterID = "1"; // default charactor
+        characterID = Math.floor(Math.random()*10 + 1).toString(); // randomly choose a player
     }
+    curName = characters[characterID];
     setPlayerName(characters[characterID]);
     init();
     var retry = setInterval(() => {

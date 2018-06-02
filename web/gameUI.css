@@ -1,5 +1,6 @@
 .cards.container > .ts.card {
     width: 220px !important;
+    height: 146px !important;
     display: inline-flex !important;
     white-space: normal;
     margin-left: 8px;
