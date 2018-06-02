@@ -102,7 +102,7 @@ def surprise(wscur,wsene):
         cur.status = Room.NOTHING
         ene.status = Room.DEFENCE
     else:
-	msg = "surNoCard"
+        msg = "surNoCard"
         if ene.hand:
             drop = random.choice(ene.hand)
             ene.remove_card(drop)
