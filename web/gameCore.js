@@ -155,6 +155,7 @@ function wsHandler(dataJson) {
                 LogPlayerChoose("robbed",dataJson.data);
                 break;
             case "tradeChoose":
+                tradeChoose = dataJson.data[1] // set system variable, cardID
                 LogPlayerChoose("tradeChoose",dataJson.data);
                 break;
             case "poisonDamaged":
