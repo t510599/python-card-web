@@ -113,8 +113,6 @@ def surprise(wscur,wsene):
         
         cur.status = Room.NOTHING
         ene.life -= cur.damage
-        drop = random.choice(ene.hand)
-        ene.remove_card(drop)
         cur.surprise = False
         cur.damage = 0 # reset
         

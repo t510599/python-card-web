@@ -241,6 +241,7 @@ class Room:
 
                 cur.hand.remove(choice)
                 cur.hand.append(ene.trading)
+                message_to_send.append(((wscur, wsene), dumps({"msg": "tradeChoose", "data": [cur.name, choice]})))
             else:
                 message_to_send.append(( (wsene,wscur), dumps( {"msg": "tradeNoCard", "data": [cur.name]})))
                
