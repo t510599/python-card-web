@@ -161,7 +161,7 @@ class Room:
                     message_to_send.append(((wsene, ), dumps({"action": "toBeRobbed"})))
                 else:
                     ene.robbed(swag)
-                    cur.add_card(swag)
+                    cur.rob(swag)
                     message_to_send.append(( (wscur,wsene), dumps({"msg": "robbed", "data": [cur.name, cur.robbing]})))
                 
                     cur.robbing = "0"
@@ -183,7 +183,7 @@ class Room:
             else:
                 message_to_send.append(( (wscur,wsene), dumps({"msg": "robbed", "data": [ene.name, ene.robbing]})))
                 cur.robbed(ene.robbing)
-                ene.add_card(ene.robbing)
+                ene.rob(ene.robbing)
             
             ene.robbing = "0"
 

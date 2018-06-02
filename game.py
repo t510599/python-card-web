@@ -33,7 +33,9 @@ class Player:
 
     def remove_card(self,id):
         self.hand.remove(id)
-        self.deck.append(id)
+    
+    def rob(self, id):
+        self.hand.append(id)
 
     def robbed(self,id): # be robbed
         try:
