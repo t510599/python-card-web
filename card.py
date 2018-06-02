@@ -45,21 +45,7 @@ def attack(wscur, wsene):
         r.extend(Room.start_turn(wsene, wscur))    
         cur.attacking = False
         cur.damage = 0 # reset
-        """
-            if choice in ene.hand:
-                if choice in unattackable:
-                    skills[choice](cur,ene)
-                    ene.remove_card(choice)
-                    break
-            elif choice == "0":
-                print("{} 受到{}點傷害".format(ene.name,cur.damage))
-                ene.life -= cur.damage
-                break
-    else:
-        print("{} 受到{}點傷害".format(ene.name,cur.damage))
-        ene.life -= cur.damage
-    cur.attacking = False
-    cur.damage = 0 # reset"""
+    
     return r
 
 def defend(wscur,wsene): # cur是用卡方
@@ -116,9 +102,14 @@ def surprise(wscur,wsene):
         cur.status = Room.NOTHING
         ene.status = Room.DEFENCE
     else:
+	msg = "surNoCard"
+        if ene.hand:
+            drop = random.choice(ene.hand)
+            ene.remove_card(drop)
+            msg = "surprised"
         r.append(( (wsene, wscur),
-            dumps({"msg": "surprised", "data": [ene.name, cur.damage]})
-        ))
+                dumps({"msg": msg, "data": [ene.name, cur.damage]})
+            ))
         
         cur.status = Room.NOTHING
         ene.life -= cur.damage
