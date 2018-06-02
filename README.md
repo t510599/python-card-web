@@ -9,8 +9,8 @@ Let's play! [https://app.stoneapp.tech/ElegyOfDisaster](https://app.stoneapp.tec
 ## Overview
 
 由兩個玩家進行一場卡牌遊戲對戰。 每一個玩家在遊戲開始時會有：
-* 20點生命
-* 115張卡牌組成的牌庫
+* 15點生命
+* 50張卡牌組成的牌庫
 * 三張初始手牌
 由系統隨機設定一名玩家先攻並進行回合制， 當玩家生命歸零，則該玩家敗北，另一玩家勝利。
 
