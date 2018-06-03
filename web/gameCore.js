@@ -255,7 +255,7 @@ $('#skip').click(function() {
 
 $('#giveup').click(function() {
     dialog.children(".header").html('你放棄人生了，SAD');
-    dialog.children(".content").html('<img src="./lose.png"><p class="result enemy name">'+eneName+'</p><p class="result player name">'+curName+'</p>');
+    dialog.children(".content").html('<div style="display: flex; justify-content: center;"><img src="./thinking.png" style="max-height: 60vh"></div>');
     dialog.children(".actions").html('<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>');
     timerInitialize(); // also remember to stop the timer
     modalOpen();
