@@ -314,7 +314,7 @@ function LogPlayerChoose(type,data) {
     if (!MouseOn) { // if mouse isn't over the div, scroll to bottom
         log.scrollTop = log.scrollHeight; // scroll to bottom
     }
-    playerChooseStatus = (playerChooseStatus && type !== "robbed") ? false : true; // to count this is first playerChoose message or second one on the turn
+    playerChooseStatus = (playerChooseStatus && type !== "robbed") ? false : true; // to count this is first playerChoose message or second one in the turn
 }
 
 function LogPlayerPoisonDamaged() {

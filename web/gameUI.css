@@ -89,5 +89,5 @@ p.result.player.name {
 }
 body::after{
     position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
-    content:url('./won.png') url('./lose.png');
+    content:url('./won.png') url('./lose.png') url('./thinking.png');
 }
