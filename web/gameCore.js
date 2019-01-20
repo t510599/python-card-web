@@ -29,19 +29,19 @@ var myself = $('#myself');
 
 /* text */
 // cards
-var cards = {'1': '攻擊', '2': '防禦', '3': '治癒', '4': '補給', '5': '強奪', '6': '奇襲', '7': '交易', '8': '洞悉', '9': '妙策', '10': '掃射', '11': '加護', '12': '劇毒', '13': '詛咒', '14': '反制', '15': '狂亂', '16': '逆轉'};
-var cardsDescription = {"1":"對敵方造成兩點傷害","2":"回復一點生命<br>被動:抵擋攻擊類卡片","3":"回復兩點生命","4":"抽取兩張手牌","5":"從敵方手牌中選擇一張加入自己的手牌","6":"對敵方造成一點傷害，並使其隨機損失一張手牌","7":"選取一張手牌與敵方交換","8":"抽取三張手牌<br>被動:抵擋攻擊類卡片，並抽取一張手牌、抵擋強奪的效果","9":"從牌庫中隨機挑出三張卡片，選擇一張加入手牌","10":"對敵方造成零～五點傷害","11":"回復三點生命，並解除中毒","12":"使敵方中毒：每個回合，玩家會損失一點生命","13":"使其損失四點生命，並隨機損失一張手牌","14":"使敵方生命減半<br>被動:抵擋攻擊類卡片，並反彈其傷害和效果","15":"回復三點生命，並對敵方造成三點傷害","16":"使自己與敵方的生命交換"}
+const cards = {'1': '攻擊', '2': '防禦', '3': '治癒', '4': '補給', '5': '強奪', '6': '奇襲', '7': '交易', '8': '洞悉', '9': '妙策', '10': '掃射', '11': '加護', '12': '劇毒', '13': '詛咒', '14': '反制', '15': '狂亂', '16': '逆轉'};
+const cardsDescription = {"1":"對敵方造成兩點傷害","2":"回復一點生命<br>被動:抵擋攻擊類卡片","3":"回復兩點生命","4":"抽取兩張手牌","5":"從敵方手牌中選擇一張加入自己的手牌","6":"對敵方造成一點傷害，並使其隨機損失一張手牌","7":"選取一張手牌與敵方交換","8":"抽取三張手牌<br>被動:抵擋攻擊類卡片，並抽取一張手牌、抵擋強奪的效果","9":"從牌庫中隨機挑出三張卡片，選擇一張加入手牌","10":"對敵方造成零～五點傷害","11":"回復三點生命，並解除中毒","12":"使敵方中毒：每個回合，玩家會損失一點生命","13":"使其損失四點生命，並隨機損失一張手牌","14":"使敵方生命減半<br>被動:抵擋攻擊類卡片，並反彈其傷害和效果","15":"回復三點生命，並對敵方造成三點傷害","16":"使自己與敵方的生命交換"}
 
-var characters = {'1': '安', '2': '圭月', '3': '梅', '4': '小兔', '5': '銀', '6': '正作', '7': 'W', '8': '桑德', '9': '海爾', '10': '雪村'};
+const characters = {'1': '安', '2': '圭月', '3': '梅', '4': '小兔', '5': '銀', '6': '正作', '7': 'W', '8': '桑德', '9': '海爾', '10': '雪村'};
 
 // templates
-var cardTemplate = `<a class="ts card" data-id="{{ id }}"><div class="content"><div class="header">{{ name }}</div><div class="meta">{{ id }}</div><div class="description">{{ description }}</div></div></a>`;
-var listCardTemplate = `<div class="disabled item" data-id="{{ id }}"><div class="ts header">{{ name }}<div class="sub header">{{ description }}</div></div></div>`;
-var logTemplate = `<div class="{{ isSelf }} speech"><div class="content">{{ content }}</div></div>`;
-var logDivider = `<div class="ts horizontal divider">{{ player }} Turn {{ turn }}</div>`;
+const cardTemplate = `<a class="ts card" data-id="{{ id }}"><div class="content"><div class="header">{{ name }}</div><div class="meta">{{ id }}</div><div class="description">{{ description }}</div></div></a>`;
+const listCardTemplate = `<div class="disabled item" data-id="{{ id }}"><div class="ts header">{{ name }}<div class="sub header">{{ description }}</div></div></div>`;
+const logTemplate = `<div class="{{ isSelf }} speech"><div class="content">{{ content }}</div></div>`;
+const logDivider = `<div class="ts horizontal divider">{{ player }} Turn {{ turn }}</div>`;
 
 // messages
-var messages = {
+const messages = {
 	"attack": "{} 攻擊 {}",
 	"damaged": "{} 受到{}點傷害",
 	"defended": "{} 防禦成功",
@@ -218,25 +218,21 @@ function wsOnError(except) {
 
 // listener
 function setCardListener() {
-    $('.cards.container a.ts.card').each((i,e) => {
-        $(e).click(function() {
-            useCard(this.dataset.id);
-        });
+    $('.cards.container').on("click", 'a.ts.card', (e) => {
+        let el = e.currentTarget;
+        useCard(el.dataset.id);
     });
 }
 
 function unsetCardListener() {
-    $('.cards.container a.ts.card').each((i,e) => {
-        $(e).off("click");
-    });
+    $('.cards.container').off("click");
 }
 
 function setModalCardListListener() {
-    $('#modal .ts.list .item').each((i,e) => {
-        $(e).click(function() {
-            useCard(this.dataset.id);
-            modalClose();
-        });
+    $('#modal .ts.list').on("click", '.item', (e) => {
+        let el = e.currentTarget;
+        useCard(el.dataset.id);
+        modalClose();
     });
 }
 
@@ -280,7 +276,7 @@ log.addEventListener("mouseover", function() { MouseOn = true; }); // if mouse i
 log.addEventListener("mouseleave", function() { MouseOn = false; });
 
 function Log(msgJson) {
-    var node = logTemplate;
+    let node = logTemplate;
     node = (now === "player") ? node.replace("{{ isSelf }}","right") : node.replace("{{ isSelf }}",""); // to distinguish if this is self log or enemy log
     node = node.replace("{{ content }}",messages[msgJson['msg']].format(msgJson['data']));
     log.insertAdjacentHTML("beforeend",node); // insert to log
@@ -290,7 +286,7 @@ function Log(msgJson) {
 }
 
 function LogPlayerDraw() {
-    var node = logTemplate.replace("{{ isSelf }}","right");
+    let node = logTemplate.replace("{{ isSelf }}","right");
     node = node.replace("{{ content }}",messages['draw'].format([curName,cards[drawID]])); // msgJson['data'][0] player name, msgJson['data'][1] card id
     log.insertAdjacentHTML("beforeend",node); // insert to log
     if (!MouseOn) { // if mouse isn't over the div, scroll to bottom
@@ -300,9 +296,9 @@ function LogPlayerDraw() {
 }
 
 function LogPlayerChoose(type,data) {
-    var node = logTemplate;
-    var name = data[0];
-    var chooseID = data[1];
+    let node = logTemplate;
+    let name = data[0];
+    let chooseID = data[1];
     if (playerChooseStatus || type === "robbed") {
         node = (now === "player") ? node.replace("{{ isSelf }}","right") : node.replace("{{ isSelf }}",""); // to distinguish if this is self log or enemy log
     } else {
@@ -318,8 +314,8 @@ function LogPlayerChoose(type,data) {
 }
 
 function LogPlayerPoisonDamaged() {
-    var node = logTemplate;
-    var tmpName = "";
+    let node = logTemplate;
+    let tmpName = "";
     if(now === "player") { // to distinguish if this is self log or enemy log
         node = node.replace("{{ isSelf }}","right");
         tmpName = curName;
@@ -343,7 +339,7 @@ function rawLog(msg) {
 }
 
 function logTurn(playerName,playerTurn) {
-    var node = logDivider;
+    let node = logDivider;
     node = node.replace("{{ player }}",playerName);
     node = node.replace("{{ turn }}",playerTurn);
     log.insertAdjacentHTML("beforeend",node); // insert to log
@@ -390,24 +386,24 @@ function statusInitialize() {
 
 // player status updater
 function setPlayerName(name) {
-    var selfNameHeader = $('#myself > .profile > .name > .header');
+    let selfNameHeader = $('#myself > .profile > .name > .header');
     selfNameHeader.html(name);
 }
 
 function setEnemyName(name) {
-    var eneNameHeader = $('#enemy > .profile > .name > .header');
+    let eneNameHeader = $('#enemy > .profile > .name > .header');
     eneNameHeader.html(name);
 }
 
 function playerUpdate(data) {
     handCards = data['hand'];
     setCard(data['hand']);
-    var selfHand = $('#selfHand'); // 手牌數
-    var selfDeck = $('#selfDeck');
-    var selfLifeBar = $('#myself > .profile > .life.progress > .bar');
-    var selfLifeText = selfLifeBar.children();
-    var selfStatus = $('#myself > .profile > .status');
-    var barWidth = (parseInt(data['life'])/20)*100 // %
+    let selfHand = $('#selfHand'); // 手牌數
+    let selfDeck = $('#selfDeck');
+    let selfLifeBar = $('#myself > .profile > .life.progress > .bar');
+    let selfLifeText = selfLifeBar.children();
+    let selfStatus = $('#myself > .profile > .status');
+    let barWidth = (parseInt(data['life'])/20)*100 // %
     selfHand.html(data['hand'].length);
     selfDeck.html(data['deck_left']);
     selfLifeBar.css('width',barWidth+'%');
@@ -432,12 +428,12 @@ function playerUpdate(data) {
 }
 
 function enemyUpdate(data) {
-    var eneHand = $('#eneHand'); // 手牌數
-    var eneDeck = $('#eneDeck');
-    var eneLifeBar = $('#enemy > .profile > .life.progress > .bar');
-    var eneLifeText = eneLifeBar.children();
-    var eneStatus = $('#enemy > .profile > .status');
-    var barWidth = (parseInt(data['life'])/20)*100 // %
+    let eneHand = $('#eneHand'); // 手牌數
+    let eneDeck = $('#eneDeck');
+    let eneLifeBar = $('#enemy > .profile > .life.progress > .bar');
+    let eneLifeText = eneLifeBar.children();
+    let eneStatus = $('#enemy > .profile > .status');
+    let barWidth = (parseInt(data['life'])/20)*100 // %
     eneHand.html(data['hand']);
     eneDeck.html(data['deck_left']);
     eneLifeBar.css('width',barWidth+'%');
@@ -473,9 +469,9 @@ function useCard(id) {
 
 function setCard(cardsArray) {
     $(cardContainer).empty();
-    var node = "";
+    let node = "";
     cardsArray.forEach((id) => {
-        var tmp = cardTemplate;
+        let tmp = cardTemplate;
         tmp = tmp.replace(/{{ id }}/g,id).replace("{{ name }}",cards[id]).replace("{{ description }}",cardsDescription[id]);
         node += tmp;
     });
@@ -486,9 +482,9 @@ function setCard(cardsArray) {
 
 // modals
 function chooseRob(data) {
-    var list = `<div class="ts selection segmented list">`;
+    let list = `<div class="ts selection segmented list">`;
     data.forEach((id) => {
-        var tmp = listCardTemplate;
+        let tmp = listCardTemplate;
         tmp = tmp.replace('disabled','').replace('{{ id }}',id).replace("{{ name }}",cards[id]).replace("{{ description }}",cardsDescription[id]);
         list+=tmp;
     });
@@ -509,9 +505,9 @@ function chooseTrade(data,tradeID=null) {
     } else {
         var text = "<p>選擇一張卡與對手交換</p>";
     }
-    var list = `<div class="ts selection segmented list">`;
+    let list = `<div class="ts selection segmented list">`;
     data.forEach((id) => {
-        var tmp = listCardTemplate;
+        let tmp = listCardTemplate;
         tmp = tmp.replace('disabled','').replace('{{ id }}',id).replace("{{ name }}",cards[id]).replace("{{ description }}",cardsDescription[id]);
         list+=tmp;
     });
@@ -525,10 +521,10 @@ function chooseTrade(data,tradeID=null) {
 }
 
 function choosePlan(data) {
-    var text = `<p>請從三張卡中選擇一張加入手牌</p>`;
-    var list = `<div class="ts selection segmented list">`;
+    let text = `<p>請從三張卡中選擇一張加入手牌</p>`;
+    let list = `<div class="ts selection segmented list">`;
     data.forEach((id) => {
-        var tmp = listCardTemplate;
+        let tmp = listCardTemplate;
         tmp = tmp.replace('disabled','').replace('{{ id }}',id).replace("{{ name }}",cards[id]).replace("{{ description }}",cardsDescription[id]); // not need to be disabled
         list+=tmp;
     });
@@ -541,13 +537,13 @@ function choosePlan(data) {
 }
 
 function askGuard(data) {
-    var attackType = data['type'];
-    var attackName = {"attack": "攻擊","surprise": "奇襲","sweep": "掃射"};
-    var damage = data['damage'];
-    var text = `對手使用了 `+attackName[attackType]+`，傷害為 `+damage;
-    var list = `<div class="ts selection segmented list">`;
+    let attackType = data['type'];
+    let attackName = {"attack": "攻擊","surprise": "奇襲","sweep": "掃射"};
+    let damage = data['damage'];
+    let text = `對手使用了 `+attackName[attackType]+`，傷害為 `+damage;
+    let list = `<div class="ts selection segmented list">`;
     handCards.forEach((id) => {
-        var tmp = listCardTemplate;
+        let tmp = listCardTemplate;
         tmp = tmp.replace('{{ id }}',id).replace("{{ name }}",cards[id]).replace("{{ description }}",cardsDescription[id]);
         list+=tmp;
     });
@@ -566,9 +562,9 @@ function askGuard(data) {
 }
 
 function askDefendRob() {
-    var list = `<div class="ts selection segmented list">`;
+    let list = `<div class="ts selection segmented list">`;
     handCards.forEach((id) => {
-        var tmp = listCardTemplate;
+        let tmp = listCardTemplate;
         tmp = tmp.replace('{{ id }}',id).replace("{{ name }}",cards[id]).replace("{{ description }}",cardsDescription[id]);
         list+=tmp;
     });
@@ -660,18 +656,18 @@ function timerInitialize() {
 
 // resize
 function resize() {
-    var h = cardContainer.offsetHeight;
+    let h = cardContainer.offsetHeight;
     grid.style.height='calc(100vh - ' + h + 'px)';
     column.css('height','calc(100vh - ' + h + 'px)');
 }
 
 resize();
-window.addEventListener("resize",resize);
+window.addEventListener("resize", resize);
 
 // game initailize
 $(document).ready(() => {
-    var roomID = localStorage.getItem('room');
-    var characterID = localStorage.getItem('character');
+    let roomID = localStorage.getItem('room');
+    let characterID = localStorage.getItem('character');
     if(!roomID || !characterID){
         roomID = "n";
         characterID = Math.floor(Math.random()*10 + 1).toString(); // randomly choose a player
@@ -691,9 +687,9 @@ $(document).ready(() => {
 /* https://stackoverflow.com/questions/11700927/horizontal-scrolling-with-mouse-wheel-in-a-div */
 function scrollHorizontally(e) {
     e = window.event || e;
-    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+    let delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
     cardContainer.scrollLeft -= (delta*40); // Multiplied by 40
     e.preventDefault();
 }
 cardContainer.addEventListener("mousewheel", scrollHorizontally, false);
-cardContainer.addEventListener("DOMMouseScroll", scrollHorizontally, false); //Firefox
+cardContainer.addEventListener("DOMMouseScroll", scrollHorizontally, false); // Firefox
