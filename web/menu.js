@@ -1,54 +1,70 @@
-// value setter
-var roomID = null,
-    characterID = null;
+// short name
+function $(selector) {
+    return (document.querySelectorAll(selector).length > 1) ? document.querySelectorAll(selector) : document.querySelector(selector);
+}
 
-function setter() {
-    if(characterID && roomID){
-        localStorage.setItem('character',characterID);
-        localStorage.setItem('room',roomID);
+// value setter
+var data = {
+    _roomID : null,
+    _characterID : null,
+    get roomID() {
+        return this._roomID;
+    },
+    set roomID(id) {
+        this._roomID = id;
+        if (this._roomID && this._characterID) {
+            localStorage.setItem('character', this._characterID);
+            localStorage.setItem('room', this._roomID);
+        }
+    },
+    get characterID() {
+        return this._characterID;
+    },
+    set characterID(id) {
+        this._characterID = id;
     }
 }
+
 // listener
-var btn = document.querySelector('.ts.primary.button');
-btn.addEventListener('click',() => {
-    btn.classList.remove('fadeInDown');
-    btn.style.animationDelay = "0s";
-    btn.classList.add('fadeOutUp');
-    setTimeout(() => {displayCharacter();},800)
+var enterBtn = $('.ts.primary.button:not(#random)'); // enter game
+enterBtn.addEventListener('click', () => {
+    enterBtn.classList.remove('fadeInDown');
+    enterBtn.style.animationDelay = "0s";
+    enterBtn.classList.add('fadeOutUp');
+    setTimeout(() => { displayCharacter(); }, 800)
 });
 
-var characterMenu = document.querySelector('.ts.centered.menu');
-var characters = Array.from(characterMenu.children);
-var nextBtn = document.querySelector('#next');
-var firstStep = document.querySelector('#firstStep');
+var characterMenu = $('.ts.centered.menu'),
+    characters = Array.from(characterMenu.children),
+    nextBtn = $('#next'),
+    firstStep = $('#firstStep');
 
 characterMenu.addEventListener('click', (e) => {
-    var id = e.target.dataset.id;
+    let id = e.target.dataset.id;
     nextBtn.classList.remove('disabled');
-    if(id) {
+    if (id) {
         characters.forEach(e => {
             e.classList.remove('active');
         });
-        characterID = id;
+        data.characterID = id;
         e.target.classList.add('active');
     }
 });
 
-nextBtn.addEventListener('click',() => {
-    if (characterID) {
+nextBtn.addEventListener('click', () => {
+    if (data.characterID) {
         displayRoom();
     }
 });
 
-firstStep.addEventListener('click',() => { displayCharacter() });
+firstStep.addEventListener('click', () => { displayCharacter() });
 
-var roomNum = document.querySelector('#roomNum');
-var roomBtn = document.querySelector('#roomBtn');
+var roomNum = $('#roomNum'),
+    roomBtn = $('#roomBtn');
 roomBtn.addEventListener('click',() => {
-    var regex = new RegExp('^[0-9]{1,5}$');
-    if(roomNum.value != null && regex.test(roomNum.value)){
-        roomID = roomNum.value;
-        setter();
+    let regex = new RegExp('^[0-9]{1,5}$');
+    if (roomNum.value != null && regex.test(roomNum.value)) {
+        data.roomID = roomNum.value;
         location.href = './cards.html';
     } else {
         ts('.snackbar').snackbar({
@@ -58,49 +74,44 @@ roomBtn.addEventListener('click',() => {
     }
 });
 
-roomNum.addEventListener('keypress',(e) => {
-    if(e.keyCode == '13') {
-        roomBtn.dispatchEvent((new Event('click')));
+roomNum.addEventListener('keypress', (e) => {
+    if (e.keyCode == '13') {
+        roomBtn.click();
     }
 })
 
-var randomBtn = document.querySelector('#random');
-randomBtn.addEventListener('click',() => {
-    roomID = "n";
-    setter();
+var randomBtn = $('#random');
+randomBtn.addEventListener('click', () => {
+    data.roomID = "n";
     location.href = './cards.html';
 });
 
 // animation
-var steps = document.querySelector('.ts.steps');
-var step = document.querySelectorAll('.ts.steps .step');
-var container = document.querySelector('.ts.fluid.container');
-var title = document.querySelector('h1');
-var characterDialog = document.querySelector('#character');
-var roomDialog = document.querySelector('#room');
+var steps = $('.ts.steps'),
+    container = $('.ts.fluid.container'),
+    title = $('h1'),
+    characterDialog = $('#character'),
+    roomDialog = $('#room');
 
 function displayCharacter() {
-    btn.style.display = "none";
+    enterBtn.style.display = "none";
     steps.style.display = "flex";
-    container.classList.remove('title');
-    container.classList.remove('fluid');
+    container.classList.remove('title', 'fluid');
     container.classList.add('dialog');
     characterDialog.style.display = "block";
     roomDialog.style.display = "none";
-    characterDialog.classList.add('animated');
-    characterDialog.classList.add('fadeIn');
+    characterDialog.classList.add('animated', 'fadeIn');
     title.style.marginTop = "1em";
-    step[0].classList.add('active');
-    step[0].classList.remove('completed');
-    step[1].classList.remove('active');
+    steps.children[0].classList.add('active');
+    steps.children[0].classList.remove('completed');
+    steps.children[1].classList.remove('active');
 }
 
 function displayRoom() {
-    step[0].classList.remove('active');
-    step[0].classList.add('completed');
-    step[1].classList.add('active');
+    steps.children[0].classList.remove('active');
+    steps.children[0].classList.add('completed');
+    steps.children[1].classList.add('active');
     characterDialog.style.display = "none";
     roomDialog.style.display = "block";
-    roomDialog.classList.add('animated');
-    roomDialog.classList.add('fadeIn');
+    roomDialog.classList.add('animated', 'fadeIn');
 }
