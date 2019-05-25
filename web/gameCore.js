@@ -500,6 +500,7 @@ function chooseRob(data) {
 function chooseTrade(data,tradeID=null) {
     if (data.length == 0) {
         send(0);
+        return;
     }
     if (tradeID) {
         var text = "<p>對手選擇了"+cards[tradeID]+"</p>";
