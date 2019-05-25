@@ -380,6 +380,7 @@ function gameUpdate(data) {
 }
 
 function statusInitialize() {
+    modalClose();
     gameStatus.removeClass('info negative warning pulsing primary inverted'); // initailize the status
     timerInitialize();
 }
@@ -623,18 +624,13 @@ function timing() {
         gameStatus.text('時間到!');
         return null;
     }
-    if (time <= 5) {
-        if(!gameStatus.hasClass('pulsing')) {
-            gameStatus.addClass('pulsing'); // pulsing animation
-        }
-        gameStatus.removeClass('info');
-        gameStatus.addClass('warning');
+    if (time <= 10) {
+        gameStatus.toggleClass('pusling', true); // pulsing animation
         gameStatus.text('輪到你出牌 '+time);
-    } else if (time <= 10) {
-        if(!gameStatus.hasClass('pulsing')) {
-            gameStatus.addClass('pulsing'); // pulsing animation
+        if (time <= 5) {
+            gameStatus.toggleClass('info', false);
+            gameStatus.toggleClass('warning', true);
         }
-        gameStatus.text('輪到你出牌 '+time);
     } else {
         gameStatus.removeClass('negative pulsing');
         gameStatus.addClass('info');
@@ -656,9 +652,11 @@ function timerInitialize() {
 
 // resize
 function resize() {
-    let h = cardContainer.offsetHeight;
-    grid.style.height='calc(100vh - ' + h + 'px)';
-    column.css('height','calc(100vh - ' + h + 'px)');
+    requestAnimationFrame(function () {
+        let h = cardContainer.offsetHeight;
+        grid.style.height='calc(100vh - ' + h + 'px)';
+        column.css('height','calc(100vh - ' + h + 'px)');
+    });
 }
 
 resize();
