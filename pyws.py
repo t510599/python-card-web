@@ -197,12 +197,8 @@ async def handler(websocket, path):
 
         print(connected)
 
-        
 
-cert = ssl.SSLContext()
-cert.load_cert_chain("/etc/letsencrypt/live/stoneapp.tech/fullchain.pem","/etc/letsencrypt/live/stoneapp.tech/privkey.pem")
-start_server = websockets.serve(handler, '10.128.0.2', 8787,ssl=cert)
+start_server = websockets.serve(handler, '10.128.0.2', 8787)
 
-#start_server = websockets.serve(handler, '127.0.0.1', 9000)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

@@ -1,6 +1,6 @@
 var socket; // create object
 
-function init(host="wss://api.stoneapp.tech:8787"){
+function init(host="wss://api.stoneapp.tech/ElegyOfDisaster"){
     socket = new WebSocket(host);
     console.log("Initializing connection...");
 
