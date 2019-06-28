@@ -187,8 +187,7 @@ function wsOnClose() {
     ts('.snackbar').snackbar({
         content: '已中斷連線',
     });
-    gameStatus.removeClass();
-    timerInitialize();
+    statusInitialize();
     gameStatus.html('連線已中斷');
     gameStatus.addClass('warning');
     $('#skip').addClass('disabled');
