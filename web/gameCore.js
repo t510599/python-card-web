@@ -5,7 +5,7 @@ var now = null; // to store whose turn is this. value: "player" or "enemy"
 var socketReady = false;
 var lock = true;
 var debugMode = false;
-var dialogDisplay = false;
+let dialogDisplay = false;
 var playerChooseStatus = false;
 var curName = "";
 var eneName = "";
@@ -187,7 +187,8 @@ function wsOnClose() {
     ts('.snackbar').snackbar({
         content: '已中斷連線',
     });
-    statusInitialize();
+    gameStatus.removeClass();
+    timerInitialize();
     gameStatus.html('連線已中斷');
     gameStatus.addClass('warning');
     $('#skip').addClass('disabled');
@@ -380,8 +381,7 @@ function gameUpdate(data) {
 }
 
 function statusInitialize() {
-    modalClose();
-    gameStatus.removeClass('info negative warning pulsing primary inverted'); // initailize the status
+    gameStatus.removeClass('info negative warninfo negative warning pulsing primary inverted'); // initailize the status
     timerInitialize();
 }
 
