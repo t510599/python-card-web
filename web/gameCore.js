@@ -16,16 +16,9 @@ var handCards = [];
 
 /* DOM Objects */
 var cardContainer = $('.cards.container')[0];
-var dialog = $('#modal');
-var grid = $('#grid')[0];
-var column = $('.column');
+var $dialog = $('#modal');
 var log = $('#log')[0];
-var gameStatus = $('#status');
-var turn = $('#turn')[0];
-var roomNum = $('.statistic > .value')[0];
-
-var enemy = $('#enemy');
-var myself = $('#myself');
+var $gameStatus = $('#status');
 
 /* text */
 // cards
@@ -188,8 +181,8 @@ function wsOnClose() {
         content: '已中斷連線',
     });
     statusInitialize();
-    gameStatus.html('連線已中斷');
-    gameStatus.addClass('warning');
+    $gameStatus.html('連線已中斷');
+    $gameStatus.addClass('warning');
     $('#skip').addClass('disabled');
     $('#giveup').addClass('disabled');
     unsetCardListener();
@@ -232,15 +225,21 @@ function setModalCardListListener() {
     $('#modal .ts.list').on("click", '.item', (e) => {
         let el = e.currentTarget;
         useCard(el.dataset.id);
-        modalClose();
+        setModalState(false);
     });
 }
 
 function setModalSkipButtonListener() {
     $('#modal #modalSkipBtn').click(function() {
         send(0);
-        modalClose();
+        setModalState(false);
     });
+}
+
+function setModalContent(header, content, actions) {
+    $dialog.children('.header').html(header);
+    $dialog.children('.content').html(content);
+    $dialog.children('.actions').html(actions)
 }
 
 $('#skip').click(function() {
@@ -250,11 +249,13 @@ $('#skip').click(function() {
 });
 
 $('#giveup').click(function() {
-    dialog.children(".header").html('你放棄人生了，SAD');
-    dialog.children(".content").html('<div style="display: flex; justify-content: center;"><img src="./thinking.png" style="max-height: 60vh"></div>');
-    dialog.children(".actions").html('<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>');
+    setModalContent(
+        "你放棄人生了，SAD",
+        `<div style="display: flex; justify-content: center;"><img src="./thinking.png" style="max-height: 60vh"></div>'`,
+        `<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>`
+    );
     timerInitialize(); // also remember to stop the timer
-    modalOpen();
+    setModalState(true);
     resultListener();
     quit();
 });
@@ -267,7 +268,7 @@ function resultListener() {
         location.reload();
     });
     $('#close').click(function() {
-        modalClose();
+        setModalState(false);
     });
 }
 
@@ -351,8 +352,9 @@ function logTurn(playerName,playerTurn) {
 // game status updater
 function gameUpdate(data) {
     if (data.room) {
-        roomNum.innerHTML = data.room.padStart(5,'0');
+        document.querySelector('.statistic > .value').textContent = data.room.padStart(5,'0');
     } else if (data.now) {
+        let turn = document.querySelector('#turn');
         if (data.now === "player") {
             turn.innerHTML = curName+" Turn "+data.player.turn;
             logTurn(curName,data.player.turn);
@@ -361,99 +363,91 @@ function gameUpdate(data) {
             }
             statusInitialize();
             lock = false; // unlock the cards
-            gameStatus.addClass('primary');
-            gameStatus.html('輪到你出牌');
+            $gameStatus.addClass('primary');
+            $gameStatus.text('輪到你出牌');
             timerSetup(28);
         } else if (data.now === "enemy") {
             turn.innerHTML = eneName+" Turn "+data.enemy.turn;
             logTurn(eneName,data.enemy.turn);
             statusInitialize();
-            gameStatus.html('等待對手出牌');
+            $gameStatus.text('等待對手出牌');
         }
         if (poisonDamage !== "") {
             LogPlayerPoisonDamaged();
         }
         playerUpdate(data['player']);
         enemyUpdate(data['enemy']);
-        modalClose();
+        setModalState(false);
     }
 }
 
 function statusInitialize() {
-    gameStatus.removeClass('info negative warninfo negative warning pulsing primary inverted'); // initailize the status
+    $gameStatus.removeClass('info negative warninfo negative warning pulsing primary inverted'); // initailize the status
     timerInitialize();
 }
 
 // player status updater
 function setPlayerName(name) {
-    let selfNameHeader = $('#myself > .profile > .name > .header');
-    selfNameHeader.html(name);
+    let $selfNameHeader = $('#myself > .profile > .name > .header');
+    $selfNameHeader.html(name);
 }
 
 function setEnemyName(name) {
-    let eneNameHeader = $('#enemy > .profile > .name > .header');
-    eneNameHeader.html(name);
+    let $eneNameHeader = $('#enemy > .profile > .name > .header');
+    $eneNameHeader.html(name);
 }
 
 function playerUpdate(data) {
     handCards = data['hand'];
     setCard(data['hand']);
-    let selfHand = $('#selfHand'); // 手牌數
-    let selfDeck = $('#selfDeck');
-    let selfLifeBar = $('#myself > .profile > .life.progress > .bar');
-    let selfLifeText = selfLifeBar.children();
-    let selfStatus = $('#myself > .profile > .status');
+    let $selfHand = $('#selfHand'); // 手牌數
+    let $selfDeck = $('#selfDeck');
+    let $selfLifeBar = $('#myself > .profile > .life.progress > .bar');
+    let $selfLifeText = $selfLifeBar.children();
+    let $selfStatus = $('#myself > .profile > .status');
     let barWidth = (parseInt(data['life'])/20)*100 // %
-    selfHand.html(data['hand'].length);
-    selfDeck.html(data['deck_left']);
-    selfLifeBar.css('width',barWidth+'%');
-    selfLifeBar.attr('data-life',data['life']);
-    selfLifeText.html(data['life']);
+    $selfHand.html(data['hand'].length);
+    $selfDeck.html(data['deck_left']);
+    $selfLifeBar.css('width',barWidth+'%');
+    $selfLifeBar.attr('data-life',data['life']);
+    $selfLifeText.html(data['life']);
     if (parseInt(data['poison']) > 0){
-        selfStatus.html('<p class="poison"><i class="theme icon"></i> 中毒 lv.'+data['poison']+'</p>');
-        selfLifeBar.addClass('poison');
+        $selfStatus.html('<p class="poison"><i class="theme icon"></i> 中毒 lv.'+data['poison']+'</p>');
+        $selfLifeBar.addClass('poison');
     } else if (parseInt(data['poison']) == 0) {
-        if (selfLifeBar.hasClass('poison')) {
-            selfLifeBar.removeClass('poison');
-        }
-        selfStatus.html('清新');
+        $selfLifeBar.toggleClass('poison', false);
+        $selfStatus.html('清新');
     }
 
     if (parseInt(data['life']) <= 0) { // dead
-        if (selfLifeBar.hasClass('poison')) {
-            selfLifeBar.removeClass('poison');
-        }
+        $selfLifeBar.toggleClass('poison', false);
         selfLifeBar.addClass('negative');
     }
 }
 
 function enemyUpdate(data) {
-    let eneHand = $('#eneHand'); // 手牌數
-    let eneDeck = $('#eneDeck');
-    let eneLifeBar = $('#enemy > .profile > .life.progress > .bar');
-    let eneLifeText = eneLifeBar.children();
-    let eneStatus = $('#enemy > .profile > .status');
+    let $eneHand = $('#eneHand'); // 手牌數
+    let $eneDeck = $('#eneDeck');
+    let $eneLifeBar = $('#enemy > .profile > .life.progress > .bar');
+    let $eneLifeText = $eneLifeBar.children();
+    let $eneStatus = $('#enemy > .profile > .status');
     let barWidth = (parseInt(data['life'])/20)*100 // %
-    eneHand.html(data['hand']);
-    eneDeck.html(data['deck_left']);
-    eneLifeBar.css('width',barWidth+'%');
-    eneLifeBar.attr('data-life',data['life']);
-    eneLifeText.html(data['life']);
+    $eneHand.html(data['hand']);
+    $eneDeck.html(data['deck_left']);
+    $eneLifeBar.css('width',barWidth+'%');
+    $eneLifeBar.attr('data-life',data['life']);
+    $eneLifeText.html(data['life']);
     if (parseInt(data['poison']) > 0){
-        eneStatus.html('<p class="poison"><i class="theme icon"></i> 中毒 lv.'+data['poison']+'</p>');
-        eneLifeBar.addClass('poison');
+        $eneStatus.html('<p class="poison"><i class="theme icon"></i> 中毒 lv.'+data['poison']+'</p>');
+        $eneLifeBar.toggleClass('poison', true);
     } else if (parseInt(data['poison']) == 0) {
-        if (eneLifeBar.hasClass('poison')) {
-            eneLifeBar.removeClass('poison');
-        }
-        eneStatus.html('清新');
+        $eneLifeBar.toggleClass('poison', false)
+        $eneStatus.html('清新');
     }
 
     if (parseInt(data['life']) <= 0) { // dead
-        if (eneLifeBar.hasClass('poison')) {
-            eneLifeBar.removeClass('poison');
-        }
-        eneLifeBar.addClass('negative');
+        $eneLifeBar.toggleClass('poison', false);
+        $eneLifeBar.addClass('negative');
     }
     
 }
@@ -489,11 +483,9 @@ function chooseRob(data) {
         list+=tmp;
     });
     list+='</div>';
-    dialog.children(".header").html('請問要搶哪張?');
-    dialog.children(".content").html(list);
-    dialog.children(".actions").html('');
+    setModalContent('請問要搶哪張?', list, '');
     setModalCardListListener();
-    modalOpen();
+    setModalState(true);
 }
 
 function chooseTrade(data,tradeID=null) {
@@ -513,11 +505,9 @@ function chooseTrade(data,tradeID=null) {
         list+=tmp;
     });
     list+='</div>';
-    dialog.children(".header").html('交易')
-    dialog.children(".content").html(text+list);
-    dialog.children(".actions").html('');
+    setModalContent('交易', text+list, '');
     setModalCardListListener();
-    modalOpen();
+    setModalState(true);
     tradeChoose = ""; // reset value
 }
 
@@ -530,11 +520,9 @@ function choosePlan(data) {
         list+=tmp;
     });
     list+='</div>';
-    dialog.children(".header").html('妙策');
-    dialog.children(".content").html(text+list);
-    dialog.children(".actions").html('');
+    setModalContent('妙策', text+list, '');
     setModalCardListListener();
-    modalOpen();
+    setModalState(true);
 }
 
 function askGuard(data) {
@@ -549,9 +537,7 @@ function askGuard(data) {
         list+=tmp;
     });
     list+='</div>';
-    dialog.children(".header").html('防禦');
-    dialog.children(".content").html(text+list);
-    dialog.children(".actions").html('<button id="modalSkipBtn" class="ts primary button">不使用卡片</button>');
+    setModalContent('防禦', text+list, '<button id="modalSkipBtn" class="ts primary button">不使用卡片</button>');
     setModalCardListListener();
     setModalSkipButtonListener();
     $('#modal .ts.list .item').each((i,e) => {
@@ -559,7 +545,7 @@ function askGuard(data) {
             $(e).removeClass('disabled');
         }
     });
-    modalOpen();
+    setModalState(true);
 }
 
 function askDefendRob() {
@@ -570,9 +556,7 @@ function askDefendRob() {
         list+=tmp;
     });
     list+='</div>';
-    dialog.children(".header").html('防禦強奪');
-    dialog.children(".content").html(list);
-    dialog.children(".actions").html('<button id="modalSkipBtn" class="ts primary button">不使用卡片</button>');
+    setModalContent('防禦強奪', list, '<button id="modalSkipBtn" class="ts primary button">不使用卡片</button>')
     setModalCardListListener();
     setModalSkipButtonListener();
     $('#modal .ts.list .item').each((i,e) => {
@@ -580,38 +564,36 @@ function askDefendRob() {
             $(e).removeClass('disabled');
         }
     });
-    modalOpen();
+    setModalState(true);
 }
 
 function playerWin() {
-    dialog.children(".header").html('你贏了！');
-    dialog.children(".content").html('<img src="./won.png"><p class="result enemy name">'+eneName+'</p><p class="result player name">'+curName+'</p>');
-    dialog.children(".actions").html('<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>');
+    setModalContent(
+        '你贏了！',
+        `<img src="./won.png"><p class="result enemy name">${eneName}</p><p class="result player name">${curName}</p>`,
+        '<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>'
+    );
     timerInitialize(); // also remember to stop the timer
-    modalOpen();
+    setModalState(true);
     resultListener();
 }
 
 function playerLose() {
-    dialog.children(".header").html('你輸爆了，SAD');
-    dialog.children(".content").html('<img src="./lose.png"><p class="result enemy name">'+eneName+'</p><p class="result player name">'+curName+'</p>');
-    dialog.children(".actions").html('<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>');
+    setModalContent(
+        '你輸爆了，SAD',
+        `<img src="./lose.png"><p class="result enemy name">${eneName}</p><p class="result player name">${curName}</p>`,
+        '<button id="close" class="ts button">關閉視窗</button><button id="restart" class="ts primary button">重啟對戰</button><button id="returnIndex" class="ts positive button">返回主畫面</button>'
+    );
     timerInitialize(); // also remember to stop the timer
-    modalOpen();
+    setModalState(true);
     resultListener();
 }
 
-function modalClose() {
-    if (dialogDisplay) {
-        ts('#modal').modal('hide');
-        dialogDisplay = false;
-    }
-}
-
-function modalOpen() {
-    if (!dialogDisplay) {
-        ts('#modal').modal('show');
-        dialogDisplay = true;
+function setModalState(state) {
+    if (dialogDisplay != state) {
+        let mode = state ? 'show' : 'hide';
+        ts('#modal').modal(mode);
+        dialogDisplay = state;
     }
 }
 
@@ -619,22 +601,22 @@ function modalOpen() {
 function timing() {
     if (time == 0) {
         clearInterval(timer); // unset the timer
-        gameStatus.removeClass('warning pulsing');
-        gameStatus.addClass('negative');
-        gameStatus.text('時間到!');
+        $gameStatus.removeClass('warning pulsing');
+        $gameStatus.addClass('negative');
+        $gameStatus.text('時間到!');
         return null;
     }
     if (time <= 10) {
-        gameStatus.toggleClass('pusling', true); // pulsing animation
-        gameStatus.text('輪到你出牌 '+time);
+        $gameStatus.toggleClass('pulsing', true); // pulsing animation
+        $gameStatus.text('輪到你出牌 '+time);
         if (time <= 5) {
-            gameStatus.toggleClass('info', false);
-            gameStatus.toggleClass('warning', true);
+            $gameStatus.toggleClass('info', false);
+            $gameStatus.toggleClass('warning', true);
         }
     } else {
-        gameStatus.removeClass('negative pulsing');
-        gameStatus.addClass('info');
-        gameStatus.text('輪到你出牌');
+        $gameStatus.removeClass('negative pulsing');
+        $gameStatus.addClass('info');
+        $gameStatus.text('輪到你出牌');
     }
     time--;
 }
@@ -646,16 +628,18 @@ function timerSetup(t) {
 
 function timerInitialize() {
     clearInterval(timer);
-    gameStatus.addClass('inverted');
-    gameStatus.html('等待中');
+    $gameStatus.addClass('inverted');
+    $gameStatus.html('等待中');
 }
 
 // resize
 function resize() {
     requestAnimationFrame(function () {
         let h = cardContainer.offsetHeight;
-        grid.style.height='calc(100vh - ' + h + 'px)';
-        column.css('height','calc(100vh - ' + h + 'px)');
+        let height = `calc(100vh - ${h}px)`;
+        document.querySelectorAll('.grid, .column').forEach((e, _i) => {
+            e.style.height = height;
+        });
     });
 }
 
