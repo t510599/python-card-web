@@ -30,8 +30,8 @@ card id and effect are in below chart:
 | 2 | defense | block offensive card / restore 1 HP  | defensive card |
 | 3 | heal |  restore 2 HP  |  |
 | 4 | supply | draw two cards  |  |
-| 5 | rob | choose and get a card from opponent’s hand|  |
-| 6 | ambush | deal 2 damage to opponent and discard a random card in opponent’s hand | offensive card |
+| 5 | rob | choose and get a card from opponent's hand|  |
+| 6 | ambush | deal 2 damage to opponent and discard a random card in opponent's hand | offensive card |
 | 7 | trade | exchange one card in hand with opponent  |  |
 | 8 | predict | block offensive card and draw one card、block ‘rob’ / draw three card | defensive card |
 | 9 | outstanding move | choosing three random cards from card deck and select one to insert into hand  |  |
@@ -39,9 +39,9 @@ card id and effect are in below chart:
 | 11 | protect | restore 3 HP and detoxify |  |
 | 12 | poison | poison opponent and deal 1 damage every turn  |  |
 | 13 | curse | deal 4 damage to opponent and discard opponent a random card in hand  |  |
-| 14 | rebound | block offensive card and rebound its effect / halve opponent’s HP  | defensive card |
+| 14 | rebound | block offensive card and rebound its effect / halve opponent's HP  | defensive card |
 | 15 | madness | restore 3 HP and deal 3 damage to opponent |  |
-| 16 | reverse | exchange your HP for opponent’s HP  | <br> |
+| 16 | reverse | exchange your HP for opponent's HP  | <br> |
 
 ## Libraries
 Web:
