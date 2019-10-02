@@ -17,7 +17,7 @@ one of players will be appointed as the first player by the system
 It’s a turn-based game
 When a player’s HP turns zero,he/she lose the game . The opponent win.
 
-##Cards 
+## Cards
 
 opponent can use defensive card while you use the offensive card
 card id and effect are in below chart:
@@ -41,7 +41,7 @@ card id and effect are in below chart:
 | 15 | madness | restore 3 HP and deal 3 damage to opponent |  |
 | 16 | reverse | exchange your HP for opponent’s HP  | <br> |
 
-##Libraries
+## Libraries
 Web:
     1.TocasUI [https://tocas-ui.com](https://tocas-ui.com)
     2.jQuery
@@ -49,7 +49,7 @@ Web:
 Server:
   1.websockets
     
-##REquirement
+## Requirement
 1.Python 3.6 or higher
 2.`websockets` installed
 
