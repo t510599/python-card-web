@@ -13,8 +13,8 @@ At the beginning of game,each player has :
 
 * three initial card in hand
 
-one of players will be appointed as the first player by the system
-It's a turn-based game
+one of players will be appointed as the first player by the system\n
+It's a turn-based game.\n
 When a player's HP turns zero,he/she lose the game . The opponent win.
 
 ## Cards
