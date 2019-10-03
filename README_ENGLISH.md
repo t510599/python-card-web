@@ -9,7 +9,7 @@ At the beginning of game,each player has:
 
 * 20 HP
 
-* a card deck witj 115 cards
+* a card deck with 115 cards
 
 * three initial cards in hand
 
