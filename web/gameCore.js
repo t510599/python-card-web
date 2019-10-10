@@ -421,7 +421,7 @@ function playerUpdate(data) {
 
     if (parseInt(data['life']) <= 0) { // dead
         $selfLifeBar.toggleClass('poison', false);
-        selfLifeBar.addClass('negative');
+        $selfLifeBar.addClass('negative');
     }
 }
 
