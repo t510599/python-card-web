@@ -3,7 +3,7 @@ Web version of **[t510599/python-card](https://github.com/t510599/python-card)**
 Let's play! [https://app.stoneapp.tech/ElegyOfDisaster](https://app.stoneapp.tech/ElegyOfDisaster)  
 
 ## Special thanks
-王禮恩(圭月) : 遊戲設計  
+[圭月](https://github.com/spacezipper) : 遊戲設計  
 [Jerry Wu](https://github.com/a91082900) : server development
 
 ## Overview
